@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 tasks = {}      # хранит статусы задач
+asyncio_tasks = []
 
 
 class TaskModel(BaseModel):
@@ -26,6 +27,7 @@ async def create_task(task_model: TaskModel):
 #            asyncio.create_task используется для создания объекта asyncio.Task из корутины,
 #            чтобы можно было запускать ее параллельно, а не ждать его завершения
     _task = asyncio.create_task(task_worker(task_id, task_model.duration))
+    asyncio_tasks.append(_task)
     return JSONResponse(content={"task_id": task_id})
 
 
