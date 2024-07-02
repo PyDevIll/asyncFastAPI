@@ -19,14 +19,13 @@ async def task_worker(task_id, duration):
     tasks[task_id] = "done"
 
 
-#            параметры в запросе POST попадают в параметры функции, в соответствии с TaskModel
-@app.post("/task", response_model=dict)
-async def create_task(task_model: TaskModel):
+@app.get("/task/run/{duration}", response_model=dict)
+async def create_task(duration: int):
     task_id = str(uuid.uuid4())
     tasks[task_id] = "running"
 #            asyncio.create_task используется для создания объекта asyncio.Task из корутины,
 #            чтобы можно было запускать ее параллельно, а не ждать его завершения
-    _task = asyncio.create_task(task_worker(task_id, task_model.duration))
+    _task = asyncio.create_task(task_worker(task_id, duration))
     asyncio_tasks.append(_task)
     return JSONResponse(content={"task_id": task_id})
 
