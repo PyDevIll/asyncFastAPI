@@ -25,7 +25,7 @@ async def create_task(task_model: TaskModel):
     task_id = str(uuid.uuid4())
     tasks[task_id] = "running"
 #            asyncio.create_task используется для создания объекта asyncio.Task из корутины,
-#            чтобы можно было запускать ее параллельно, а не ждать его завершения
+#            чтобы можно было запускать ее параллельно, а не ждать её завершения
     _task = asyncio.create_task(task_worker(task_id, task_model.duration))
     asyncio_tasks.append(_task)
     return JSONResponse(content={"task_id": task_id})
@@ -35,4 +35,7 @@ async def create_task(task_model: TaskModel):
 #            Можно указать тип в параметре ф-ии, и он будет преобразован в этот тип
 @app.get("/task/{task_id}", response_model=dict)
 async def check_task(task_id: str):
-    return JSONResponse(content={"status": tasks[task_id]})
+    try:
+        return JSONResponse(content={"status": tasks[task_id]})
+    except KeyError:
+        return JSONResponse(content={"message": "Task not found"})
